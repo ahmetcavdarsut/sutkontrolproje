@@ -57,7 +57,9 @@ const ilaclar = [
   "Exforge", "Micardis Plus", "Telmisartan", "Losartan", "Amlodipin",
   "Aranesp", "Eprex", "Retacrit", "NeoRecormon", "Mircera",
   "valsartan", "telmisartan", "amlodipin", "darbepoetin alfa", "epoetin alfa",
-  "epoetin zeta", "epoetin beta", "methoxy peg-epoetin beta"
+  "epoetin zeta", "epoetin beta", "methoxy peg-epoetin beta",
+  "Xarelto", "Plavix", "Beloc ZOK", "Trajenta", "Jardiance",
+  "Folbiol", "Ator", "Panto", "Coledan", "Yumoskap", "Ayra", "Ferhemar"
 ];
 
 const eritropoietinler = ["Aranesp", "Eprex", "Retacrit", "NeoRecormon", "Mircera"];
@@ -135,9 +137,9 @@ function ilacSecildi() {
   }
 }
 
+// --- Antihipertansif Akışı ---
 function antihipertansifAkisi(ilac) {
   const sorularDiv = document.getElementById("sorular");
-
   sorularDiv.innerHTML = `
     <div class="question">
       <p>${ilac} için rapor var mı?</p>
@@ -156,7 +158,6 @@ function raporsuzAntihipertansif() {
 
 function raporluAntihipertansif(ilac) {
   const sorularDiv = document.getElementById("sorular");
-
   if (ilac === "Exforge") {
     sorularDiv.innerHTML = `
       <div class="question">
@@ -187,9 +188,9 @@ function temizleSorular() {
   document.getElementById("sorular").innerHTML = "";
 }
 
+// --- Eritropoietin Akışı ---
 function eritropoietinAkisi(ilac) {
   const sorularDiv = document.getElementById("sorular");
-
   sorularDiv.innerHTML = `
     <div class="question">
       <p>${ilac} için rapor var mı?</p>
@@ -208,7 +209,6 @@ function raporsuzEpo() {
 
 function raporluEpo() {
   const sorularDiv = document.getElementById("sorular");
-
   sorularDiv.innerHTML = `
     <div class="question">
       <p>Hasta ayaktan mı, yatan mı?</p>
@@ -222,7 +222,6 @@ function raporluEpo() {
 
 function epoTanilar() {
   const sorularDiv = document.getElementById("sorular");
-
   sorularDiv.innerHTML = `
     <div class="question">
       <p>Tanı seçiniz:</p>
@@ -236,7 +235,6 @@ function epoTanilar() {
 
 function epoTedaviTipi() {
   const sorularDiv = document.getElementById("sorular");
-
   sorularDiv.innerHTML = `
     <div class="question">
       <p>Tedavi durumu seçiniz:</p>
@@ -255,7 +253,6 @@ function tedaviSec(secim) {
 
 function epoLabDegerleri() {
   const sorularDiv = document.getElementById("sorular");
-
   sorularDiv.innerHTML = `
     <div class="question">
       <p>TSAT değeri (%) giriniz:</p>
