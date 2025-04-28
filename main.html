@@ -29,6 +29,7 @@
 <input type="file" id="fileInput" accept=".pdf,image/*" onchange="dosyaOku()">
 <div id="progress"></div>
 <div id="hamMetin" class="result info" style="display:none;"></div>
+
 <!-- Bulunan sonuçlar -->
 <div id="bulunanlar" class="result info" style="display:none;"></div>
 
@@ -81,9 +82,13 @@ function dosyaOku() {
       e.target.result,
       'tur',
       { logger: m => { document.getElementById('progress').innerText = m.status + " " + (m.progress*100).toFixed(0) + "%"; } }
-document.getElementById('hamMetin').style.display = "block";
-document.getElementById('hamMetin').innerText = text;    ).then(({ data: { text } }) => {
+    ).then(({ data: { text } }) => {
       document.getElementById('progress').innerText = "Tamamlandı!";
+      
+      // OCR sonucu ham metni gösterelim
+      document.getElementById('hamMetin').style.display = "block";
+      document.getElementById('hamMetin').innerText = text;
+
       taramaYap(text.toLowerCase());
     });
   };
