@@ -19,43 +19,53 @@
 <body>
 
 <h1>SUT Kontrol Sistemi</h1>
-<!-- Reçete metni yapıştırma -->
-<label for="recete">Reçete Metni Yapıştırın:</label>
-<textarea id="recete" rows="6" placeholder="Buraya reçete metnini yapıştırın..."></textarea>
-<button onclick="receteTara()">Taramaya Başla</button>
+<!-- Giriş ekranı -->
+<div id="loginScreen">
+  <h2>Giriş Yap</h2>
+  <input type="text" id="username" placeholder="Kullanıcı Adı">
+  <input type="password" id="password" placeholder="Şifre">
+  <button onclick="login()">Giriş Yap</button>
+  <div id="loginError" style="color: red; margin-top: 10px;"></div>
+</div>
 
-<!-- Dosya yükleme alanı -->
-<h2>Veya Dosya Yükle (PDF veya Görsel):</h2>
-<input type="file" id="fileInput" accept=".pdf,image/*" onchange="dosyaOku()">
-<div id="progress"></div>
-<div id="hamMetin" class="result info" style="display:none;"></div>
+<!-- Ana içerik -->
+<div id="mainContent" style="display:none;">
+  <!-- Reçete metni yapıştırma -->
+  <label for="recete">Reçete Metni Yapıştırın:</label>
+  <textarea id="recete" rows="6" placeholder="Buraya reçete metnini yapıştırın..."></textarea>
+  <button onclick="receteTara()">Taramaya Başla</button>
 
-<!-- Bulunan sonuçlar -->
-<div id="bulunanlar" class="result info" style="display:none;"></div>
+  <!-- Dosya yükleme alanı -->
+  <h2>Veya Dosya Yükle (PDF veya Görsel):</h2>
+  <input type="file" id="fileInput" accept=".pdf,image/*" onchange="dosyaOku()">
+  <div id="progress"></div>
 
-<hr>
+  <!-- Bulunan sonuçlar -->
+  <div id="bulunanlar" class="result info" style="display:none;"></div>
 
-<h2>Veya İlaç Seçimi:</h2>
-<label for="ilac">İlaç Seçimi:</label>
-<select id="ilac" onchange="ilacSecildi()">
-  <option value="">-- İlaç Seçin --</option>
-  <option value="Exforge">Amlodipin + Valsartan (Exforge)</option>
-  <option value="Micardis Plus">Telmisartan + HCT (Micardis Plus)</option>
-  <option value="Telmisartan">Telmisartan (Micardis)</option>
-  <option value="Losartan">Losartan (Cozaar)</option>
-  <option value="Amlodipin">Amlodipin (Norvasc)</option>
-  <option value="Aranesp">Darbepoetin Alfa (Aranesp)</option>
-  <option value="Eprex">Epoetin Alfa (Eprex)</option>
-  <option value="Retacrit">Epoetin Zeta (Retacrit)</option>
-  <option value="NeoRecormon">Epoetin Beta (NeoRecormon)</option>
-  <option value="Mircera">Methoxy PEG-Epoetin Beta (Mircera)</option>
-</select>
+  <hr>
 
-<div id="sorular"></div>
-<div id="sonuc"></div>
+  <!-- İlaç seçimi -->
+  <h2>Veya İlaç Seçimi:</h2>
+  <label for="ilac">İlaç Seçimi:</label>
+  <select id="ilac" onchange="ilacSecildi()">
+    <option value="">-- İlaç Seçin --</option>
+    <option value="Exforge">Amlodipin + Valsartan (Exforge)</option>
+    <option value="Micardis Plus">Telmisartan + HCT (Micardis Plus)</option>
+    <option value="Telmisartan">Telmisartan (Micardis)</option>
+    <option value="Losartan">Losartan (Cozaar)</option>
+    <option value="Amlodipin">Amlodipin (Norvasc)</option>
+    <option value="Aranesp">Darbepoetin Alfa (Aranesp)</option>
+    <option value="Eprex">Epoetin Alfa (Eprex)</option>
+    <option value="Retacrit">Epoetin Zeta (Retacrit)</option>
+    <option value="NeoRecormon">Epoetin Beta (NeoRecormon)</option>
+    <option value="Mircera">Methoxy PEG-Epoetin Beta (Mircera)</option>
+  </select>
+
+  <div id="sorular"></div>
+  <div id="sonuc"></div>
+</div>
 <script>
-const ilaclar = [
-  <script>
 let ilaclar = [];
 
 fetch('ilaclar_listesi.json')
@@ -63,12 +73,18 @@ fetch('ilaclar_listesi.json')
   .then(data => {
     ilaclar = data.map(item => item.isim.toLowerCase());
   });
-</script>
-];
 
-const eritropoietinler = ["Aranesp", "Eprex", "Retacrit", "NeoRecormon", "Mircera"];
-const antihipertansifler = ["Exforge", "Micardis Plus", "Telmisartan", "Losartan", "Amlodipin"];
-let tedaviTipi = "";
+function login() {
+  const username = document.getElementById('username').value;
+  const password = document.getElementById('password').value;
+
+  if (username === "admin" && password === "73597359") {
+    document.getElementById('loginScreen').style.display = "none";
+    document.getElementById('mainContent').style.display = "block";
+  } else {
+    document.getElementById('loginError').innerText = "Hatalı kullanıcı adı veya şifre.";
+  }
+}
 
 function receteTara() {
   const recete = document.getElementById("recete").value.toLowerCase();
@@ -87,11 +103,6 @@ function dosyaOku() {
       { logger: m => { document.getElementById('progress').innerText = m.status + " " + (m.progress*100).toFixed(0) + "%"; } }
     ).then(({ data: { text } }) => {
       document.getElementById('progress').innerText = "Tamamlandı!";
-      
-      // OCR sonucu ham metni gösterelim
-      document.getElementById('hamMetin').style.display = "block";
-      document.getElementById('hamMetin').innerText = text;
-
       taramaYap(text.toLowerCase());
     });
   };
@@ -101,7 +112,7 @@ function dosyaOku() {
 function taramaYap(metin) {
   let bulunanlar = [];
   ilaclar.forEach(ilac => {
-    if (metin.includes(ilac.toLowerCase())) {
+    if (metin.includes(ilac)) {
       bulunanlar.push(ilac);
     }
   });
@@ -136,6 +147,9 @@ function ilacSecildi() {
   temizle();
   const ilac = document.getElementById("ilac").value;
   if (!ilac) return;
+
+  const eritropoietinler = ["Aranesp", "Eprex", "Retacrit", "NeoRecormon", "Mircera"];
+  const antihipertansifler = ["Exforge", "Micardis Plus", "Telmisartan", "Losartan", "Amlodipin"];
 
   if (eritropoietinler.includes(ilac)) {
     eritropoietinAkisi(ilac);
