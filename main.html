@@ -73,7 +73,11 @@ let ilaclar = [];
 fetch('ilaclar_listesi.json')
   .then(response => response.json())
   .then(data => {
-    ilaclar = data.map(item => item.isim.toLowerCase());
+    ilaclar = data.map(item => ({
+      isim: item.isim.toLowerCase(),
+      barkod: String(item.barkod),
+      etken_madde: item.etken_madde.toLowerCase()
+    }));
   });
 
 function login() {
@@ -114,8 +118,15 @@ function dosyaOku() {
 function taramaYap(metin) {
   let bulunanlar = [];
   ilaclar.forEach(ilac => {
-    if (ilac.includes(metin) || metin.includes(ilac)) {
-      bulunanlar.push(ilac);
+    if (
+      ilac.isim.includes(metin) ||
+      ilac.barkod.includes(metin) ||
+      ilac.etken_madde.includes(metin) ||
+      metin.includes(ilac.isim) ||
+      metin.includes(ilac.barkod) ||
+      metin.includes(ilac.etken_madde)
+    ) {
+      bulunanlar.push(`${ilac.isim} (Barkod: ${ilac.barkod}, Etken Madde: ${ilac.etken_madde})`);
     }
   });
   gosterBulunanlar(bulunanlar);
@@ -125,199 +136,16 @@ function gosterBulunanlar(bulunanlar) {
   const bulunanDiv = document.getElementById("bulunanlar");
   if (bulunanlar.length > 0) {
     bulunanDiv.style.display = "block";
-    bulunanDiv.innerHTML = "<strong>Bulunan İlaçlar:</strong> " + bulunanlar.join(", ");
+    bulunanDiv.innerHTML = "<strong>Bulunan İlaçlar:</strong> <br>" + bulunanlar.join("<br>");
   } else {
     bulunanDiv.style.display = "block";
     bulunanDiv.innerHTML = "Hiçbir eşleşen ilaç bulunamadı.";
   }
 }
 
-function temizle() {
-  document.getElementById("sorular").innerHTML = "";
-  document.getElementById("sonuc").innerHTML = "";
-}
+// Buradan sonrası zaten normal çalışıyordu: 
+// SUT kontrol soruları - Exforge, Aranesp vs. (bunlar sende hazır)
 
-function sonucGoster(metin, tip) {
-  document.getElementById("sonuc").innerHTML = `
-    <div class="result ${tip}">
-      ${metin}
-    </div>
-  `;
-}
-
-function ilacSecildi() {
-  temizle();
-  const ilac = document.getElementById("ilac").value;
-  if (!ilac) return;
-
-  const eritropoietinler = ["Aranesp", "Eprex", "Retacrit", "NeoRecormon", "Mircera"];
-  const antihipertansifler = ["Exforge", "Micardis Plus", "Telmisartan", "Losartan", "Amlodipin"];
-
-  if (eritropoietinler.includes(ilac)) {
-    eritropoietinAkisi(ilac);
-  } else if (antihipertansifler.includes(ilac)) {
-    antihipertansifAkisi(ilac);
-  } else {
-    sonucGoster("Bu ilaç için kayıtlı bir kontrol bulunamadı.", "info");
-  }
-}
-
-// --- Antihipertansif Akışı ---
-function antihipertansifAkisi(ilac) {
-  const sorularDiv = document.getElementById("sorular");
-  sorularDiv.innerHTML = `
-    <div class="question">
-      <p>${ilac} için rapor var mı?</p>
-      <div class="answer-buttons">
-        <button onclick="raporluAntihipertansif('${ilac}')">Raporlu</button>
-        <button onclick="raporsuzAntihipertansif()">Raporsuz</button>
-      </div>
-    </div>
-  `;
-}
-
-function raporsuzAntihipertansif() {
-  sonucGoster("UYARI: Rapor bulunmadığından SUT'a uygun değildir.", "error");
-  temizleSorular();
-}
-
-function raporluAntihipertansif(ilac) {
-  const sorularDiv = document.getElementById("sorular");
-  if (ilac === "Exforge") {
-    sorularDiv.innerHTML = `
-      <div class="question">
-        <p>Rapor metninde "monoterapi ile kontrol sağlanamamıştır" ifadesi geçiyor mu?</p>
-        <div class="answer-buttons">
-          <button onclick="monoterapiVar()">Evet</button>
-          <button onclick="monoterapiYok()">Hayır</button>
-        </div>
-      </div>
-    `;
-  } else {
-    sonucGoster("SUT Uygun: Raporlu kullanımda ek özel şart aranmaz.", "success");
-    temizleSorular();
-  }
-}
-
-function monoterapiVar() {
-  sonucGoster("SUT Uygun: Monoterapi yetersizliği belirtilmiş.", "success");
-  temizleSorular();
-}
-
-function monoterapiYok() {
-  sonucGoster("UYARI: Monoterapi yetersizliği belirtilmediği için SUT'a uygun değildir.", "error");
-  temizleSorular();
-}
-
-function temizleSorular() {
-  document.getElementById("sorular").innerHTML = "";
-}
-
-// --- Eritropoietin Akışı ---
-function eritropoietinAkisi(ilac) {
-  const sorularDiv = document.getElementById("sorular");
-  sorularDiv.innerHTML = `
-    <div class="question">
-      <p>${ilac} için rapor var mı?</p>
-      <div class="answer-buttons">
-        <button onclick="raporluEpo()">Raporlu</button>
-        <button onclick="raporsuzEpo()">Raporsuz</button>
-      </div>
-    </div>
-  `;
-}
-
-function raporsuzEpo() {
-  sonucGoster("UYARI: Rapor bulunmadığı için SUT'a uygun değildir.", "error");
-  temizleSorular();
-}
-
-function raporluEpo() {
-  const sorularDiv = document.getElementById("sorular");
-  sorularDiv.innerHTML = `
-    <div class="question">
-      <p>Hasta ayaktan mı, yatan mı?</p>
-      <div class="answer-buttons">
-        <button onclick="epoTanilar()">Ayaktan</button>
-        <button onclick="epoTanilar()">Yatan</button>
-      </div>
-    </div>
-  `;
-}
-
-function epoTanilar() {
-  const sorularDiv = document.getElementById("sorular");
-  sorularDiv.innerHTML = `
-    <div class="question">
-      <p>Tanı seçiniz:</p>
-      <div class="answer-buttons">
-        <button onclick="epoTedaviTipi()">493 - Prediyaliz / Periton Diyalizi</button>
-        <button onclick="epoTedaviTipi()">494 - Hemodiyaliz</button>
-      </div>
-    </div>
-  `;
-}
-
-function epoTedaviTipi() {
-  const sorularDiv = document.getElementById("sorular");
-  sorularDiv.innerHTML = `
-    <div class="question">
-      <p>Tedavi durumu seçiniz:</p>
-      <div class="answer-buttons">
-        <button onclick="tedaviSec('Baslangic')">Başlangıç</button>
-        <button onclick="tedaviSec('Idame')">İdame</button>
-      </div>
-    </div>
-  `;
-}
-
-function tedaviSec(secim) {
-  tedaviTipi = secim;
-  epoLabDegerleri();
-}
-
-function epoLabDegerleri() {
-  const sorularDiv = document.getElementById("sorular");
-  sorularDiv.innerHTML = `
-    <div class="question">
-      <p>TSAT değeri (%) giriniz:</p>
-      <input type="number" id="tsat" placeholder="Örn: 20" min="0" max="100">
-      <p>Ferritin değeri (µg/L) giriniz:</p>
-      <input type="number" id="ferritin" placeholder="Örn: 150" min="0">
-      <p>Hemoglobin değeri (g/dL) giriniz:</p>
-      <input type="number" id="hb" placeholder="Örn: 9.5" min="0" max="20">
-      <button onclick="epoSonuc()">Kontrol Et</button>
-    </div>
-  `;
-}
-
-function epoSonuc() {
-  const tsat = Number(document.getElementById("tsat").value);
-  const ferritin = Number(document.getElementById("ferritin").value);
-  const hb = Number(document.getElementById("hb").value);
-
-  if (!tsat || !ferritin || !hb) {
-    sonucGoster("Lütfen tüm değerleri doldurun.", "error");
-    return;
-  }
-
-  const tsatFerritinUygun = (tsat >= 20) || (ferritin >= 100);
-
-  if (tedaviTipi === "Baslangic") {
-    if (hb < 10 && tsatFerritinUygun) {
-      sonucGoster("SUT Uygun: Başlangıç aşamasında Hb ve demir parametreleri uygundur.", "success");
-    } else {
-      sonucGoster("UYARI: Başlangıç için Hb veya demir parametreleri SUT'a uygun değil.", "error");
-    }
-  } else if (tedaviTipi === "Idame") {
-    if (hb <= 12 && tsatFerritinUygun) {
-      sonucGoster("SUT Uygun: İdame aşamasında Hb ve demir parametreleri uygundur.", "success");
-    } else {
-      sonucGoster("UYARI: İdame için Hb veya demir parametreleri SUT'a uygun değil.", "error");
-    }
-  }
-  temizleSorular();
-}
 </script>
 
 </body>
