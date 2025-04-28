@@ -1,12 +1,239 @@
-
 <!DOCTYPE html>
 <html lang="tr">
 <head>
-<meta charset="UTF-8">
-<title>SUT Kontrol Sistemi</title>
+  <meta charset="UTF-8">
+  <title>SUT Kontrol Sistemi</title>
+  <style>
+    body { font-family: Arial, sans-serif; background-color: #f2f6fc; margin: 0; padding: 20px; }
+    h1 { color: #1a237e; }
+    select, button, input { width: 100%; padding: 10px; margin-top: 15px; font-size: 16px; }
+    .question, .result { margin-top: 20px; padding: 15px; border-radius: 8px; background: #ffffff; box-shadow: 0px 2px 5px rgba(0,0,0,0.1); }
+    .result.success { background-color: #d4edda; color: #155724; border: 1px solid #c3e6cb; }
+    .result.error { background-color: #f8d7da; color: #721c24; border: 1px solid #f5c6cb; }
+    .result.info { background-color: #fff3cd; color: #856404; border: 1px solid #ffeeba; }
+    .answer-buttons { margin-top: 10px; display: flex; gap: 10px; }
+    .answer-buttons button { flex: 1; }
+  </style>
 </head>
+
 <body>
-<h1>Başarıyla giriş yapıldı!</h1>
-<p>Burada asıl SUT Kontrol sistemi çalışacak.</p>
+
+<h1>SUT Kontrol Sistemi</h1>
+
+<label for="ilac">İlaç Seçimi:</label>
+<select id="ilac" onchange="ilacSecildi()">
+  <option value="">-- İlaç Seçin --</option>
+  <option value="Exforge">Amlodipin + Valsartan (Exforge)</option>
+  <option value="Micardis Plus">Telmisartan + HCT (Micardis Plus)</option>
+  <option value="Telmisartan">Telmisartan (Micardis)</option>
+  <option value="Losartan">Losartan (Cozaar)</option>
+  <option value="Amlodipin">Amlodipin (Norvasc)</option>
+  <option value="Aranesp">Darbepoetin Alfa (Aranesp)</option>
+  <option value="Eprex">Epoetin Alfa (Eprex)</option>
+  <option value="Retacrit">Epoetin Zeta (Retacrit)</option>
+  <option value="NeoRecormon">Epoetin Beta (NeoRecormon)</option>
+  <option value="Mircera">Methoxy PEG-Epoetin Beta (Mircera)</option>
+</select>
+
+<div id="sorular"></div>
+<div id="sonuc"></div>
+
+<script>
+const eritropoietinler = ["Aranesp", "Eprex", "Retacrit", "NeoRecormon", "Mircera"];
+const antihipertansifler = ["Exforge", "Micardis Plus", "Telmisartan", "Losartan", "Amlodipin"];
+let tedaviTipi = "";
+
+function temizle() {
+  document.getElementById("sorular").innerHTML = "";
+  document.getElementById("sonuc").innerHTML = "";
+}
+
+function sonucGoster(metin, tip) {
+  document.getElementById("sonuc").innerHTML = `
+    <div class="result ${tip}">
+      ${metin}
+    </div>
+  `;
+}
+
+function ilacSecildi() {
+  temizle();
+  const ilac = document.getElementById("ilac").value;
+  if (!ilac) return;
+
+  if (eritropoietinler.includes(ilac)) {
+    eritropoietinAkisi(ilac);
+  } else if (antihipertansifler.includes(ilac)) {
+    antihipertansifAkisi(ilac);
+  } else {
+    sonucGoster("Bu ilaç için kayıtlı bir kontrol bulunamadı.", "info");
+  }
+}
+
+// Antihipertansif Akışı
+function antihipertansifAkisi(ilac) {
+  const sorularDiv = document.getElementById("sorular");
+
+  sorularDiv.innerHTML = `
+    <div class="question">
+      <p>${ilac} için rapor var mı?</p>
+      <div class="answer-buttons">
+        <button onclick="raporluAntihipertansif('${ilac}')">Raporlu</button>
+        <button onclick="raporsuzAntihipertansif()">Raporsuz</button>
+      </div>
+    </div>
+  `;
+}
+
+function raporsuzAntihipertansif() {
+  sonucGoster("UYARI: Rapor bulunmadığından SUT'a uygun değildir.", "error");
+  temizleSorular();
+}
+
+function raporluAntihipertansif(ilac) {
+  const sorularDiv = document.getElementById("sorular");
+
+  if (ilac === "Exforge") {
+    sorularDiv.innerHTML = `
+      <div class="question">
+        <p>Rapor metninde "monoterapi ile kontrol sağlanamamıştır" ifadesi geçiyor mu?</p>
+        <div class="answer-buttons">
+          <button onclick="monoterapiVar()">Evet</button>
+          <button onclick="monoterapiYok()">Hayır</button>
+        </div>
+      </div>
+    `;
+  } else {
+    sonucGoster("SUT Uygun: Raporlu kullanımda ek özel şart aranmaz.", "success");
+    temizleSorular();
+  }
+}
+
+function monoterapiVar() {
+  sonucGoster("SUT Uygun: Monoterapi yetersizliği belirtilmiş.", "success");
+  temizleSorular();
+}
+
+function monoterapiYok() {
+  sonucGoster("UYARI: Monoterapi yetersizliği belirtilmediği için SUT'a uygun değildir.", "error");
+  temizleSorular();
+}
+
+function temizleSorular() {
+  document.getElementById("sorular").innerHTML = "";
+}
+
+// Eritropoietin Akışı
+function eritropoietinAkisi(ilac) {
+  const sorularDiv = document.getElementById("sorular");
+
+  sorularDiv.innerHTML = `
+    <div class="question">
+      <p>${ilac} için rapor var mı?</p>
+      <div class="answer-buttons">
+        <button onclick="raporluEpo()">Raporlu</button>
+        <button onclick="raporsuzEpo()">Raporsuz</button>
+      </div>
+    </div>
+  `;
+}
+
+function raporsuzEpo() {
+  sonucGoster("UYARI: Rapor bulunmadığı için SUT'a uygun değildir.", "error");
+  temizleSorular();
+}
+
+function raporluEpo() {
+  const sorularDiv = document.getElementById("sorular");
+
+  sorularDiv.innerHTML = `
+    <div class="question">
+      <p>Hasta ayaktan mı, yatan mı?</p>
+      <div class="answer-buttons">
+        <button onclick="epoTanilar()">Ayaktan</button>
+        <button onclick="epoTanilar()">Yatan</button>
+      </div>
+    </div>
+  `;
+}
+
+function epoTanilar() {
+  const sorularDiv = document.getElementById("sorular");
+
+  sorularDiv.innerHTML = `
+    <div class="question">
+      <p>Tanı seçiniz:</p>
+      <div class="answer-buttons">
+        <button onclick="epoTedaviTipi()">493 - Prediyaliz / Periton Diyalizi</button>
+        <button onclick="epoTedaviTipi()">494 - Hemodiyaliz</button>
+      </div>
+    </div>
+  `;
+}
+
+function epoTedaviTipi() {
+  const sorularDiv = document.getElementById("sorular");
+
+  sorularDiv.innerHTML = `
+    <div class="question">
+      <p>Tedavi durumu seçiniz:</p>
+      <div class="answer-buttons">
+        <button onclick="tedaviSec('Baslangic')">Başlangıç</button>
+        <button onclick="tedaviSec('Idame')">İdame</button>
+      </div>
+    </div>
+  `;
+}
+
+function tedaviSec(secim) {
+  tedaviTipi = secim;
+  epoLabDegerleri();
+}
+
+function epoLabDegerleri() {
+  const sorularDiv = document.getElementById("sorular");
+
+  sorularDiv.innerHTML = `
+    <div class="question">
+      <p>TSAT değeri (%) giriniz:</p>
+      <input type="number" id="tsat" placeholder="Örn: 20" min="0" max="100">
+      <p>Ferritin değeri (µg/L) giriniz:</p>
+      <input type="number" id="ferritin" placeholder="Örn: 150" min="0">
+      <p>Hemoglobin değeri (g/dL) giriniz:</p>
+      <input type="number" id="hb" placeholder="Örn: 9.5" min="0" max="20">
+      <button onclick="epoSonuc()">Kontrol Et</button>
+    </div>
+  `;
+}
+
+function epoSonuc() {
+  const tsat = Number(document.getElementById("tsat").value);
+  const ferritin = Number(document.getElementById("ferritin").value);
+  const hb = Number(document.getElementById("hb").value);
+
+  if (!tsat || !ferritin || !hb) {
+    sonucGoster("Lütfen tüm değerleri doldurun.", "error");
+    return;
+  }
+
+  const tsatFerritinUygun = (tsat >= 20) || (ferritin >= 100);
+
+  if (tedaviTipi === "Baslangic") {
+    if (hb < 10 && tsatFerritinUygun) {
+      sonucGoster("SUT Uygun: Başlangıç aşamasında Hb ve demir parametreleri uygundur.", "success");
+    } else {
+      sonucGoster("UYARI: Başlangıç için Hb veya demir parametreleri SUT'a uygun değil.", "error");
+    }
+  } else if (tedaviTipi === "Idame") {
+    if (hb <= 12 && tsatFerritinUygun) {
+      sonucGoster("SUT Uygun: İdame aşamasında Hb ve demir parametreleri uygundur.", "success");
+    } else {
+      sonucGoster("UYARI: İdame için Hb veya demir parametreleri SUT'a uygun değil.", "error");
+    }
+  }
+  temizleSorular();
+}
+</script>
+
 </body>
 </html>
