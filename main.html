@@ -14,6 +14,9 @@
     .result.info { background-color: #fff3cd; color: #856404; border: 1px solid #ffeeba; }
     .answer-buttons { margin-top: 10px; display: flex; gap: 10px; }
     .answer-buttons button { flex: 1; }
+    ul#sonuclar { list-style:none; padding:0; margin-top:10px; }
+    ul#sonuclar li { padding:8px; background:#fff; border:1px solid #ccc; margin-top:5px; cursor:pointer; }
+    ul#sonuclar li:hover { background:#e0e0e0; }
   </style>
 </head>
 <body>
@@ -41,27 +44,14 @@
   <input type="file" id="fileInput" accept=".pdf,image/*" onchange="dosyaOku()">
   <div id="progress"></div>
 
-  <!-- Bulunan sonuçlar -->
   <div id="bulunanlar" class="result info" style="display:none;"></div>
 
   <hr>
 
-  <!-- İlaç seçimi -->
-  <h2>Veya İlaç Seçimi:</h2>
-  <label for="ilac">İlaç Seçimi:</label>
-  <select id="ilac" onchange="ilacSecildi()">
-    <option value="">-- İlaç Seçin --</option>
-    <option value="Exforge">Amlodipin + Valsartan (Exforge)</option>
-    <option value="Micardis Plus">Telmisartan + HCT (Micardis Plus)</option>
-    <option value="Telmisartan">Telmisartan (Micardis)</option>
-    <option value="Losartan">Losartan (Cozaar)</option>
-    <option value="Amlodipin">Amlodipin (Norvasc)</option>
-    <option value="Aranesp">Darbepoetin Alfa (Aranesp)</option>
-    <option value="Eprex">Epoetin Alfa (Eprex)</option>
-    <option value="Retacrit">Epoetin Zeta (Retacrit)</option>
-    <option value="NeoRecormon">Epoetin Beta (NeoRecormon)</option>
-    <option value="Mircera">Methoxy PEG-Epoetin Beta (Mircera)</option>
-  </select>
+  <!-- İlaç Arama -->
+  <h2>İlaç Arama:</h2>
+  <input type="text" id="ilacArama" placeholder="İlaç ismi, barkod veya etken madde yazın..." oninput="aramaYap()">
+  <ul id="sonuclar"></ul>
 
   <div id="sorular"></div>
   <div id="sonuc"></div>
@@ -143,9 +133,42 @@ function gosterBulunanlar(bulunanlar) {
   }
 }
 
-// Buradan sonrası zaten normal çalışıyordu: 
-// SUT kontrol soruları - Exforge, Aranesp vs. (bunlar sende hazır)
+// İlaç Arama
+function aramaYap() {
+  const arama = document.getElementById('ilacArama').value.toLowerCase();
+  const sonuclar = document.getElementById('sonuclar');
+  sonuclar.innerHTML = "";
 
+  if (arama.length < 2) return;
+
+  ilaclar.forEach(ilac => {
+    if (
+      ilac.isim.includes(arama) ||
+      ilac.barkod.includes(arama) ||
+      ilac.etken_madde.includes(arama)
+    ) {
+      const li = document.createElement('li');
+      li.textContent = `${ilac.isim} (Barkod: ${ilac.barkod})`;
+      li.onclick = () => ilacSecildi(ilac.isim);
+      sonuclar.appendChild(li);
+    }
+  });
+}
+
+function ilacSecildi(secilenIlac) {
+  document.getElementById('ilacArama').value = secilenIlac;
+  document.getElementById('sonuclar').innerHTML = "";
+  // Burada seçilen ilaca göre SUT sorularını başlatacağız (şu anda örnek bir cevap veriyorum)
+  sonucGoster(`${secilenIlac} seçildi. SUT kontrolü başlayacak!`, "success");
+}
+
+function sonucGoster(metin, tip) {
+  document.getElementById("sonuc").innerHTML = `
+    <div class="result ${tip}">
+      ${metin}
+    </div>
+  `;
+}
 </script>
 
 </body>
