@@ -28,7 +28,7 @@
 <h2>Veya Dosya Yükle (PDF veya Görsel):</h2>
 <input type="file" id="fileInput" accept=".pdf,image/*" onchange="dosyaOku()">
 <div id="progress"></div>
-
+<div id="hamMetin" class="result info" style="display:none;"></div>
 <!-- Bulunan sonuçlar -->
 <div id="bulunanlar" class="result info" style="display:none;"></div>
 
@@ -81,7 +81,8 @@ function dosyaOku() {
       e.target.result,
       'tur',
       { logger: m => { document.getElementById('progress').innerText = m.status + " " + (m.progress*100).toFixed(0) + "%"; } }
-    ).then(({ data: { text } }) => {
+document.getElementById('hamMetin').style.display = "block";
+document.getElementById('hamMetin').innerText = text;    ).then(({ data: { text } }) => {
       document.getElementById('progress').innerText = "Tamamlandı!";
       taramaYap(text.toLowerCase());
     });
