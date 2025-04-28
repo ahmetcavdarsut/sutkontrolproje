@@ -55,12 +55,15 @@
 <div id="sonuc"></div>
 <script>
 const ilaclar = [
-  "Exforge", "Micardis Plus", "Telmisartan", "Losartan", "Amlodipin",
-  "Aranesp", "Eprex", "Retacrit", "NeoRecormon", "Mircera",
-  "valsartan", "telmisartan", "amlodipin", "darbepoetin alfa", "epoetin alfa",
-  "epoetin zeta", "epoetin beta", "methoxy peg-epoetin beta",
-  "Xarelto", "Plavix", "Beloc ZOK", "Trajenta", "Jardiance",
-  "Folbiol", "Ator", "Panto", "Coledan", "Yumoskap", "Ayra", "Ferhemar"
+  <script>
+let ilaclar = [];
+
+fetch('ilaclar_listesi.json')
+  .then(response => response.json())
+  .then(data => {
+    ilaclar = data.map(item => item.isim.toLowerCase());
+  });
+</script>
 ];
 
 const eritropoietinler = ["Aranesp", "Eprex", "Retacrit", "NeoRecormon", "Mircera"];
