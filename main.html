@@ -7,13 +7,11 @@
   <style>
     body { font-family: Arial, sans-serif; background-color: #f2f6fc; margin: 0; padding: 20px; }
     h1 { color: #1a237e; }
-    textarea, select, button, input { width: 100%; padding: 10px; margin-top: 15px; font-size: 16px; }
+    textarea, input, button { width: 100%; padding: 10px; margin-top: 15px; font-size: 16px; }
     .result { margin-top: 20px; padding: 15px; border-radius: 8px; background: #ffffff; box-shadow: 0px 2px 5px rgba(0,0,0,0.1); }
     .result.success { background-color: #d4edda; color: #155724; border: 1px solid #c3e6cb; }
     .result.error { background-color: #f8d7da; color: #721c24; border: 1px solid #f5c6cb; }
     .result.info { background-color: #fff3cd; color: #856404; border: 1px solid #ffeeba; }
-    .answer-buttons { margin-top: 10px; display: flex; gap: 10px; }
-    .answer-buttons button { flex: 1; }
     ul#sonuclar { list-style:none; padding:0; margin-top:10px; }
     ul#sonuclar li { padding:8px; background:#fff; border:1px solid #ccc; margin-top:5px; cursor:pointer; }
     ul#sonuclar li:hover { background:#e0e0e0; }
@@ -23,7 +21,6 @@
 
 <h1>SUT Kontrol Sistemi</h1>
 
-<!-- Giriş ekranı -->
 <div id="loginScreen">
   <h2>Giriş Yap</h2>
   <input type="text" id="username" placeholder="Kullanıcı Adı">
@@ -32,14 +29,11 @@
   <div id="loginError" style="color: red; margin-top: 10px;"></div>
 </div>
 
-<!-- Ana içerik -->
 <div id="mainContent" style="display:none;">
-  <!-- Reçete metni yapıştırma -->
   <label for="recete">Reçete Metni Yapıştırın:</label>
   <textarea id="recete" rows="6" placeholder="Buraya reçete metnini yapıştırın..."></textarea>
   <button onclick="receteTara()">Taramaya Başla</button>
 
-  <!-- Dosya yükleme alanı -->
   <h2>Veya Dosya Yükle (PDF veya Görsel):</h2>
   <input type="file" id="fileInput" accept=".pdf,image/*" onchange="dosyaOku()">
   <div id="progress"></div>
@@ -48,26 +42,27 @@
 
   <hr>
 
-  <!-- İlaç Arama -->
   <h2>İlaç Arama:</h2>
   <input type="text" id="ilacArama" placeholder="İlaç ismi, barkod veya etken madde yazın..." oninput="aramaYap()">
   <ul id="sonuclar"></ul>
 
-  <div id="sorular"></div>
-  <div id="sonuc"></div>
+  <div id="sutBilgisi"></div>
 </div>
 
 <script>
 let ilaclar = [];
+let sutKurallari = {};
 
 fetch('ilaclar_listesi.json')
   .then(response => response.json())
   .then(data => {
-    ilaclar = data.map(item => ({
-      isim: item.isim.toLowerCase(),
-      barkod: String(item.barkod),
-      etken_madde: item.etken_madde.toLowerCase()
-    }));
+    ilaclar = data;
+  });
+
+fetch('ilaclar_sut.json')
+  .then(response => response.json())
+  .then(data => {
+    sutKurallari = data;
   });
 
 function login() {
@@ -116,7 +111,7 @@ function taramaYap(metin) {
       metin.includes(ilac.barkod) ||
       metin.includes(ilac.etken_madde)
     ) {
-      bulunanlar.push(`${ilac.isim} (Barkod: ${ilac.barkod}, Etken Madde: ${ilac.etken_madde})`);
+      bulunanlar.push(ilac);
     }
   });
   gosterBulunanlar(bulunanlar);
@@ -126,14 +121,13 @@ function gosterBulunanlar(bulunanlar) {
   const bulunanDiv = document.getElementById("bulunanlar");
   if (bulunanlar.length > 0) {
     bulunanDiv.style.display = "block";
-    bulunanDiv.innerHTML = "<strong>Bulunan İlaçlar:</strong> <br>" + bulunanlar.join("<br>");
+    bulunanDiv.innerHTML = "<strong>Bulunan İlaçlar:</strong><br>" + bulunanlar.map(ilac => ilac.isim).join("<br>");
   } else {
     bulunanDiv.style.display = "block";
     bulunanDiv.innerHTML = "Hiçbir eşleşen ilaç bulunamadı.";
   }
 }
 
-// İlaç Arama
 function aramaYap() {
   const arama = document.getElementById('ilacArama').value.toLowerCase();
   const sonuclar = document.getElementById('sonuclar');
@@ -158,16 +152,16 @@ function aramaYap() {
 function ilacSecildi(secilenIlac) {
   document.getElementById('ilacArama').value = secilenIlac;
   document.getElementById('sonuclar').innerHTML = "";
-  // Burada seçilen ilaca göre SUT sorularını başlatacağız (şu anda örnek bir cevap veriyorum)
-  sonucGoster(`${secilenIlac} seçildi. SUT kontrolü başlayacak!`, "success");
-}
 
-function sonucGoster(metin, tip) {
-  document.getElementById("sonuc").innerHTML = `
-    <div class="result ${tip}">
-      ${metin}
-    </div>
-  `;
+  let bilgi = "";
+
+  if (sutKurallari[secilenIlac]) {
+    bilgi += `<div class="result info"><strong>${secilenIlac}:</strong> ${sutKurallari[secilenIlac]}</div>`;
+  } else {
+    bilgi += `<div class="result error">Bu ilaç için kayıtlı özel SUT hükmü bulunamadı.</div>`;
+  }
+
+  document.getElementById('sutBilgisi').innerHTML = bilgi;
 }
 </script>
 
