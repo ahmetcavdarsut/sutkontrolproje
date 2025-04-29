@@ -2,26 +2,37 @@
   {
     "isim": "EXFORGE",
     "barkod": "8699570000096",
-    "etken_madde": "AMLODIPIN + VALSARTAN"
+    "etken_madde": "AMLODIPIN + VALSARTAN",
+    "grup": "ANTIHIPERTANSIFLER"
   },
   {
     "isim": "MICARDIS PLUS",
     "barkod": "8699504030115",
-    "etken_madde": "TELMISARTAN + HCTZ"
+    "etken_madde": "TELMISARTAN + HCTZ",
+    "grup": "ANTIHIPERTANSIFLER"
   },
   {
     "isim": "NORVASC",
     "barkod": "8699809090047",
-    "etken_madde": "AMLODIPIN"
+    "etken_madde": "AMLODIPIN",
+    "grup": "ANTIHIPERTANSIFLER"
   },
   {
     "isim": "ARANESP",
     "barkod": "8699536090243",
-    "etken_madde": "DARBEPOETIN ALFA"
+    "etken_madde": "DARBEPOETIN ALFA",
+    "grup": "ERITROPOETINLER"
   },
   {
     "isim": "EPREX",
     "barkod": "8699503090332",
-    "etken_madde": "EPOETIN ALFA"
+    "etken_madde": "EPOETIN ALFA",
+    "grup": "ERITROPOETINLER"
+  },
+  {
+    "isim": "CRESTOR",
+    "barkod": "8699546010014",
+    "etken_madde": "ROSUVASTATIN",
+    "grup": "STATINLER"
   }
 ]
