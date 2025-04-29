@@ -55,20 +55,15 @@ let sutKurallari = {};
 
 fetch('ilaclar_listesi.json')
   .then(response => response.json())
-  .then(data => {
-    ilaclar = data;
-  });
+  .then(data => { ilaclar = data; });
 
 fetch('ilaclar_sut.json')
   .then(response => response.json())
-  .then(data => {
-    sutKurallari = data;
-  });
+  .then(data => { sutKurallari = data; });
 
 function login() {
   const username = document.getElementById('username').value;
   const password = document.getElementById('password').value;
-
   if (username === "admin" && password === "73597359") {
     document.getElementById('loginScreen').style.display = "none";
     document.getElementById('mainContent').style.display = "block";
@@ -85,7 +80,6 @@ function receteTara() {
 function dosyaOku() {
   const file = document.getElementById('fileInput').files[0];
   if (!file) return;
-
   const reader = new FileReader();
   reader.onload = function(e) {
     Tesseract.recognize(
@@ -132,7 +126,6 @@ function aramaYap() {
   const arama = document.getElementById('ilacArama').value.toLowerCase();
   const sonuclar = document.getElementById('sonuclar');
   sonuclar.innerHTML = "";
-
   if (arama.length < 2) return;
 
   ilaclar.forEach(ilac => {
@@ -143,13 +136,13 @@ function aramaYap() {
     ) {
       const li = document.createElement('li');
       li.textContent = `${ilac.isim} (Barkod: ${ilac.barkod})`;
-      li.onclick = () => ilacSecildi(ilac.isim);
+      li.onclick = () => ilacSecildi(ilac.isim, ilac.grup);
       sonuclar.appendChild(li);
     }
   });
 }
 
-function ilacSecildi(secilenIlac) {
+function ilacSecildi(secilenIlac, grup) {
   document.getElementById('ilacArama').value = secilenIlac;
   document.getElementById('sonuclar').innerHTML = "";
 
@@ -157,8 +150,14 @@ function ilacSecildi(secilenIlac) {
 
   if (sutKurallari[secilenIlac]) {
     bilgi += `<div class="result info"><strong>${secilenIlac}:</strong> ${sutKurallari[secilenIlac]}</div>`;
-  } else {
-    bilgi += `<div class="result error">Bu ilaç için kayıtlı özel SUT hükmü bulunamadı.</div>`;
+  }
+
+  if (grup && sutKurallari[grup]) {
+    bilgi += `<div class="result info"><strong>(${grup} Grubu):</strong> ${sutKurallari[grup]}</div>`;
+  }
+
+  if (bilgi === "") {
+    bilgi = `<div class="result error">Bu ilaç için kayıtlı özel SUT hükmü bulunamadı.</div>`;
   }
 
   document.getElementById('sutBilgisi').innerHTML = bilgi;
