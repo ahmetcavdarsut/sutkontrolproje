@@ -97,14 +97,7 @@ function dosyaOku() {
 function taramaYap(metin) {
   let bulunanlar = [];
   ilaclar.forEach(ilac => {
-    if (
-      ilac.isim.includes(metin) ||
-      ilac.barkod.includes(metin) ||
-      ilac.etken_madde.includes(metin) ||
-      metin.includes(ilac.isim) ||
-      metin.includes(ilac.barkod) ||
-      metin.includes(ilac.etken_madde)
-    ) {
+    if (ilac.isim.includes(metin) || ilac.barkod.includes(metin) || ilac.etken_madde.includes(metin) || metin.includes(ilac.isim) || metin.includes(ilac.barkod) || metin.includes(ilac.etken_madde)) {
       bulunanlar.push(ilac);
     }
   });
@@ -129,11 +122,7 @@ function aramaYap() {
   if (arama.length < 2) return;
 
   ilaclar.forEach(ilac => {
-    if (
-      ilac.isim.includes(arama) ||
-      ilac.barkod.includes(arama) ||
-      ilac.etken_madde.includes(arama)
-    ) {
+    if (ilac.isim.includes(arama) || ilac.barkod.includes(arama) || ilac.etken_madde.includes(arama)) {
       const li = document.createElement('li');
       li.textContent = `${ilac.isim} (Barkod: ${ilac.barkod})`;
       li.onclick = () => ilacSecildi(ilac.isim, ilac.grup);
@@ -151,11 +140,9 @@ function ilacSecildi(secilenIlac, grup) {
   if (sutKurallari[secilenIlac]) {
     bilgi += `<div class="result info"><strong>${secilenIlac}:</strong> ${sutKurallari[secilenIlac]}</div>`;
   }
-
   if (grup && sutKurallari[grup]) {
     bilgi += `<div class="result info"><strong>(${grup} Grubu):</strong> ${sutKurallari[grup]}</div>`;
   }
-
   if (bilgi === "") {
     bilgi = `<div class="result error">Bu ilaç için kayıtlı özel SUT hükmü bulunamadı.</div>`;
   }
