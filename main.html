@@ -1,10 +1,11 @@
 <!DOCTYPE html>
+
 <html lang="tr">
 <head>
-  <meta charset="UTF-8">
-  <title>SUT Kontrol Sistemi</title>
-  <script src="https://cdn.jsdelivr.net/npm/tesseract.js@2.1.1/dist/tesseract.min.js"></script>
-  <style id="theme-style">
+<meta charset="utf-8"/>
+<title>SUT Kontrol Sistemi</title>
+<script src="https://cdn.jsdelivr.net/npm/tesseract.js@2.1.1/dist/tesseract.min.js"></script>
+<style id="theme-style">
     body { font-family: Arial, sans-serif; background-color: #f2f6fc; margin: 0; padding: 20px; }
     h1 { color: #1a237e; }
     input, button, select { width: 100%; padding: 10px; margin-top: 15px; font-size: 16px; }
@@ -19,39 +20,32 @@
   </style>
 </head>
 <body>
-
 <h1>SUT Kontrol Sistemi</h1>
+<!-- login removed start -->
 
-<div id="loginScreen">
-  <h2>Giriş Yap</h2>
-  <input type="text" id="username" placeholder="Kullanıcı Adı">
-  <input type="password" id="password" placeholder="Şifre">
-  <button onclick="login()">Giriş Yap</button>
-  <div id="loginError" style="color: red; margin-top: 10px;"></div>
+
+
+
+
+<!-- login removed end -->
+<div id="mainContent" style="display:block;">
+<h2>İlaç Arama:</h2>
+<input id="ilacArama" onclick="aramaYap()" oninput="aramaYap()" placeholder="İlaç ismi, barkod veya etken madde yazın..." type="text"/>
+<ul id="sonuclar"></ul>
+<div id="sutBilgisi"></div>
+<hr/>
+<h2>PDF veya Görsel Yükle:</h2>
+<input accept=".pdf,image/*" id="fileInput" onchange="dosyaOku()" type="file"/>
+<div id="progress"></div>
+<div class="result info" id="bulunanlar" style="display:none;"></div>
+<hr/>
+<div id="theme-buttons">
+<h3>Sayfa Teması:</h3>
+<button onclick="setTheme('light')">Açık Tema</button>
+<button onclick="setTheme('dark')">Koyu Tema</button>
+<button onclick="setTheme('blue')">Mavi Tema</button>
 </div>
-
-<div id="mainContent" style="display:none;">
-
-  <h2>İlaç Arama:</h2>
-  <input type="text" id="ilacArama" placeholder="İlaç ismi, barkod veya etken madde yazın..." oninput="aramaYap()" onclick="aramaYap()">
-  <ul id="sonuclar"></ul>
-  <div id="sutBilgisi"></div>
-
-  <hr>
-  <h2>PDF veya Görsel Yükle:</h2>
-  <input type="file" id="fileInput" accept=".pdf,image/*" onchange="dosyaOku()">
-  <div id="progress"></div>
-  <div id="bulunanlar" class="result info" style="display:none;"></div>
-
-  <hr>
-  <div id="theme-buttons">
-    <h3>Sayfa Teması:</h3>
-    <button onclick="setTheme('light')">Açık Tema</button>
-    <button onclick="setTheme('dark')">Koyu Tema</button>
-    <button onclick="setTheme('blue')">Mavi Tema</button>
-  </div>
 </div>
-
 <script>
 let ilaclar = [];
 let sutKurallari = {};
@@ -64,7 +58,7 @@ fetch('ilaclar_sut.json')
   .then(response => response.json())
   .then(data => { sutKurallari = data; });
 
-function login() {
+function login() { document.getElementById('mainContent').style.display = 'block'; // giriş kaldırıldı document.getElementById('mainContent').style.display = 'block'; } // giriş kaldırıldı
   const username = document.getElementById('username').value;
   const password = document.getElementById('password').value;
   if (username === "admin" && password === "73597359") {
@@ -155,6 +149,5 @@ function setTheme(theme) {
   document.getElementById("theme-style").innerHTML += css;
 }
 </script>
-
 </body>
 </html>
