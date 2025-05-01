@@ -118,7 +118,7 @@ function aramaYap() {
   const sonuclar = document.getElementById('sonuclar');
   sonuclar.innerHTML = "";
   ilaclar.forEach(ilac => {
-    if (ilac.isim.toLowerCase().includes(arama) || ilac.barkod.includes(arama) || ilac.etken_madde.toLowerCase().includes(arama) || arama === "") {
+    if (ilac.isim.toLowerCase().includes(arama) || ilac.barkod.includes(arama) || ilac.etken_madde.toLowerCase().includes(arama) || false) {
       const li = document.createElement('li');
       li.textContent = `${ilac.isim} (Barkod: ${ilac.barkod})`;
       li.onclick = () => ilacSecildi(ilac.isim, ilac.grup);
