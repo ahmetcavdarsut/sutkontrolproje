@@ -1,3 +1,8 @@
 {
-  "ANTIHIPERTANSIFLER": "Hipertansiyon kontrolü için monoterapi yetersizliği raporda belirtilmelidir."
+  "EXFORGE": "Hipertansiyon tedavisinde, monoterapi ile kontrol sağlanamadığı ibaresi raporda yer almalıdır.",
+  "ARANESP": "Hb < 10 g/dL başlangıçta, ≤ 12 g/dL idamede. TSAT ≥ 20% veya ferritin ≥ 100 yeterlidir.",
+  "CRESTOR": "Statinler için LDL hedef değere ulaşılamamış olmalıdır.",
+  "ANTIHIPERTANSIFLER": "Monoterapi ile hipertansiyon kontrol altına alınamamış olmalı.",
+  "ERITROPOETINLER": "Hb < 10 g/dL başlangıçta, ≤ 12 g/dL idamede. Demir desteği gerekli.",
+  "STATINLER": "LDL hedef değeri karşılanmamışsa statinler kullanılabilir."
 }

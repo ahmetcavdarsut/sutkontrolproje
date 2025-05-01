@@ -4,5 +4,17 @@
     "barkod": "8699570000096",
     "etken_madde": "AMLODIPIN + VALSARTAN",
     "grup": "ANTIHIPERTANSIFLER"
+  },
+  {
+    "isim": "ARANESP",
+    "barkod": "8699536090243",
+    "etken_madde": "DARBEPOETIN ALFA",
+    "grup": "ERITROPOETINLER"
+  },
+  {
+    "isim": "CRESTOR",
+    "barkod": "8699546010014",
+    "etken_madde": "ROSUVASTATIN",
+    "grup": "STATINLER"
   }
 ]
