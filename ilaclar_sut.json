@@ -1,11 +1,3 @@
 {
-  "EXFORGE": "Hipertansiyon tedavisinde, monoterapi ile kontrol sağlanamadığı ibaresi raporda yer almalıdır.",
-  "MICARDIS PLUS": "Telmisartan + HCTZ kombinasyonu için ek bir şart aranmaz; rapor dozu aşılmamalıdır.",
-  "NORVASC": "Hipertansiyon tedavisinde, monoterapi ile kontrol sağlanamadığı ibaresi gereklidir.",
-  "ARANESP": "Başlangıçta Hb < 10 g/dL olmalıdır. İdame tedavisinde Hb ≤ 12 g/dL olmalıdır. TSAT ≥ 20% veya ferritin ≥ 100 ng/mL yeterlidir.",
-  "EPREX": "Başlangıç Hb < 10, idame Hb ≤ 12 olmalıdır. Demir destek kriterleri aranır.",
-  "CRESTOR": "Statin grubu ilaçlarda LDL hedef değerine ulaşılamamışsa kullanımı uygundur.",
-  "STATINLER": "Statin grubu ilaçlarda LDL hedef değerine ulaşılmadığı durumda SUT kapsamında ödeme yapılır.",
-  "ERITROPOETINLER": "Eritropoetin grubu ilaçlarda TSAT ≥ 20% veya Ferritin ≥ 100 ng/mL aranır. Başlangıç Hb < 10, idame Hb ≤ 12 olmalıdır.",
-  "ANTIHIPERTANSIFLER": "Antihipertansif grubu ilaçlarda monoterapi ile hipertansiyon kontrol edilemediği raporda belirtilmelidir."
+  "ANTIHIPERTANSIFLER": "Hipertansiyon kontrolü için monoterapi yetersizliği raporda belirtilmelidir."
 }
